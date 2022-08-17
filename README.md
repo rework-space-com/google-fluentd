@@ -8,49 +8,51 @@ td-agent is open sourced as [Fluentd project](http://github.com/fluent/). In oth
 
 td-agent package is based on [Omnibus-ruby](https://github.com/opscode/omnibus-ruby)
 
-## Installation
-
-We'll assume you have Ruby 2.6 and Bundler installed. First ensure all required gems are installed and ready to use:
-
-```shell
-$ bundle install --binstubs
-```
-
 ## Usage
 
-### Build
+### Build on Fedora 33
 
-At first, you should download dependent gems using downloder. This is for avoding broken gem download and reduce the build time by avoiding internet access.
-
+Install required packages:
 ```shell
-$ bin/gem_downloader core_gems.rb
-$ bin/gem_downloader plugin_gems.rb
-$ bin/gem_downloader ui_gems.rb
+# yum install '@Development Tools'
+# yum install '@Development Libraries'
+# dnf install fedora-packager rpmdevtools gcc perl
 ```
 
-Create required directory and add permission
+Install Ruby 2.6.10:
+```shell
+# dnf install gcc-c++ patch readline readline-devel zlib zlib-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison sqlite-devel
+# curl -sSL https://rvm.io/mpapis.asc | sudo gpg2 --import - 
+# curl -sSL https://rvm.io/pkuczynski.asc | sudo gpg2 --import - 
+# curl -L get.rvm.io | sudo bash -s stable
+# source /etc/profile.d/rvm.sh 
+# rvm reload 
+# rvm requirements run
+# rvm install 2.6.10
+# rvm use 2.6.10 --default
+```
+
+Ensure all required gems are installed and ready to use:
 
 ```shell
-$ sudo mkdir -p /opt/td-agent /var/cache/omnibus
-$ sudo chown [USER] /opt/td-agent
-$ sudo chown [USER] /var/cache/omnibus
+# cd google-fluentd/
+# gem install bundler
+# bundle install --binstubs
+```
+
+You should download dependent gems using downloder. This is for avoding broken gem download and reduce the build time by avoiding internet access:
+```shell
+# bin/gem_downloader core_gems.rb
+# bin/gem_downloader plugin_gems.rb
+# bin/gem_downloader ui_gems.rb
 ```
 
 After that, you create a platform-specific package using the `build project` command:
 
 ```shell
-$ bin/omnibus build td-agent2
+# bin/omnibus build google-fluentd
 ```
-
-The platform/architecture type of the package created will match the platform
-where the `build project` command is invoked. So running this command on say a
-MacBook Pro will generate a Mac OS X specific package. After the build
-completes packages will be available in `pkg/`.
-
-#### Build on CentOS 5
-
-td-agent build doesn't work on CentOS 5 by OpenSSL related issues.
-Follow this setup instruction before use omnibus: https://gist.github.com/repeatedly/97d4746e83a5ec135abf3eb77f46ff30
+After a successful build, the `*.rpm` package will be found `pkg` directory
 
 ### Clean
 
